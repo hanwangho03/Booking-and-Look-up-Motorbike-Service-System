@@ -4,15 +4,12 @@ version: '3.8'
 services:
   app:
     build: .
-    # Ánh xạ cổng ứng dụng: 6080 trên máy chủ được ánh xạ tới 6080 trong container.
     ports:
       - "6080:6080"
-    # Đảm bảo dịch vụ 'db' khởi động trước dịch vụ 'app'
     depends_on:
       - db
     # Định nghĩa các biến môi trường để kết nối với cơ sở dữ liệu
     environment:
-      # QUAN TRỌNG: Thay đổi serverTimezone từ UTC thành Asia/Ho_Chi_Minh
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/training3?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ""
@@ -37,7 +34,6 @@ services:
   # Dịch vụ mới: phpMyAdmin
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    # Ánh xạ cổng: Bạn có thể truy cập phpMyAdmin tại http://localhost:8081
     ports:
       - "8081:80"
     depends_on:
