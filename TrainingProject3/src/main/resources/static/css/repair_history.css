@@ -1,0 +1,208 @@
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    width: 800px;
+    max-width: 95%;
+}
+h1 {
+    color: #0056b3;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+button:hover {
+    background-color: #0056b3;
+}
+.message {
+    margin-top: 10px;
+    font-size: 0.9em;
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+}
+.error-message {
+    color: #d9534f;
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+}
+.success-message {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border: 1px solid #d6e9c6;
+}
+.results-container {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+.vehicle-info {
+    background-color: #e9f5ff;
+    border: 1px solid #cce5ff;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+.vehicle-info h2 {
+    color: #0056b3;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+.vehicle-info p {
+    margin: 5px 0;
+}
+.maintenance-status {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+.maintenance-status h3 {
+    color: #007bff;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+.status-ok {
+    color: #28a745;
+    font-weight: bold;
+}
+.status-due-soon {
+    color: #ffc107;
+    font-weight: bold;
+}
+.status-overdue {
+    color: #dc3545;
+    font-weight: bold;
+}
+.status-no-history, .status-unknown {
+    color: #6c757d;
+    font-weight: bold;
+}
+
+.repair-history-item {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.repair-history-item h3 {
+    color: #28a745;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+.repair-details ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+.repair-details li {
+    margin-bottom: 5px;
+}
+.no-results {
+    text-align: center;
+    color: #6c757d;
+    padding: 20px;
+    font-style: italic;
+}
+.review-section {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #ccc;
+}
+.review-section h5 {
+    margin-bottom: 5px;
+    color: #007bff;
+}
+.rating-stars {
+    color: gold;
+    font-size: 1.2em;
+}
+
+.review-form-container {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #eee;
+}
+.review-form-container label {
+    margin-bottom: 3px;
+    font-weight: normal;
+}
+.review-form-container input[type="number"],
+.review-form-container textarea {
+    width: calc(100% - 12px);
+    padding: 6px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+/* === CÁC THAY ĐỔI CHÍNH === */
+
+/* 1. Thêm khối này để tạo layout flex cho các nút */
+.review-actions {
+    display: flex;
+    flex-wrap: wrap; /* Cho phép các nút xuống dòng nếu không đủ chỗ */
+    gap: 10px; /* Tạo khoảng cách 10px giữa các nút */
+    margin-top: 10px;
+}
+
+/* 2. Ghi đè lại width cho các nút bên trong .review-actions */
+.review-actions button {
+    width: auto; /* Để chiều rộng tự động theo nội dung */
+    flex-grow: 1; /* Giúp các nút có chiều rộng bằng nhau và lấp đầy không gian */
+}
+
+/* 3. Chỉnh sửa lại quy tắc cũ */
+.edit-review-btn, .add-review-btn, .export-pdf-btn {
+    /* margin-right: 10px;  <-- Đã loại bỏ vì dùng 'gap' */
+    padding: 8px 15px;
+}
+
+.export-pdf-btn {
+    background-color: #28a745;
+}
+.export-pdf-btn:hover {
+    background-color: #218838;
+}
+
+.review-form-container button {
+    width: auto;
+    padding: 8px 15px;
+    margin-right: 10px;
+    background-color: #28a745;
+}
+.review-form-container button.cancel-btn {
+    background-color: #6c757d;
+}
+.review-form-container button:hover {
+    opacity: 0.9;
+}

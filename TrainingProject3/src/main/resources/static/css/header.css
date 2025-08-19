@@ -1,0 +1,50 @@
+
+.nav-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1em;
+    line-height: 1.2;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.nav-button:hover {
+    background-color: #0056b3;
+}
+
+/* Style cho nút Đăng xuất */
+#logout-btn {
+    background-color: #dc3545; /* Màu đỏ */
+}
+#logout-btn:hover {
+    background-color: #c82333;
+}
+
+#user-display-name {
+    display: inline-block;
+    color: white;
+    margin-right: 10px;
+    font-weight: bold;
+    max-width: 120px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 1em;
+    line-height: normal;
+    padding: 8px 0;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.header-container {
+    flex-wrap: nowrap;
+}

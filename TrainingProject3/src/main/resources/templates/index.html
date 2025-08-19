@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+    <title layout:title="Trang chủ - Dịch vụ xe máy"></title>
+    <th:block layout:fragment="css_styles">
+        <style>
+            body, h1, h2, h3, p, ul, section {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            /* Main Layout adjustments if needed */
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f8f9fa;
+                color: #343a40;
+                line-height: 1.6;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            /* Hero Section */
+            .hero-section {
+                position: relative;
+                color: white;
+                text-align: center;
+                padding: 100px 20px;
+                margin-bottom: 40px;
+                border-radius: 8px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 450px;
+                overflow: hidden;
+            }
+
+            .hero-section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Lớp phủ đen trong suốt */
+                z-index: 1; /* Đặt lớp phủ trên ảnh nền nhưng dưới nội dung */
+            }
+
+            .hero-content {
+                position: relative; /* Đặt nội dung trên lớp phủ */
+                z-index: 2;
+            }
+
+            /* Background Image Cycling */
+            .hero-background-image {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-size: cover;
+                background-position: center center;
+                opacity: 0; /* Bắt đầu với độ trong suốt bằng 0 */
+                transition: opacity 1.5s ease-in-out; /* Hiệu ứng chuyển mượt mà */
+            }
+
+            .hero-background-image.active {
+                opacity: 1; /* Ảnh hiện tại sẽ có độ trong suốt 1 */
+            }
+
+            .hero-section h2 {
+                color: white;
+                font-size: 3.5em;
+                margin-bottom: 20px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            }
+            .hero-section p {
+                font-size: 1.3em;
+                max-width: 800px;
+                margin: 0 auto 30px auto;
+                text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            }
+            .hero-section .btn-primary {
+                background-color: #ffc107;
+                color: #343a40;
+                padding: 14px 30px;
+                border: none;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 1.1em;
+                transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            }
+            .hero-section .btn-primary:hover {
+                background-color: #e0a800;
+                transform: translateY(-5px);
+                box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            }
+
+            /* Features Section */
+            .features-section {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 25px;
+                justify-content: center;
+                margin-bottom: 50px;
+            }
+            .feature-card {
+                background-color: #fff;
+                padding: 35px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+                text-align: center;
+                flex: 1 1 300px;
+                max-width: 350px;
+                transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                cursor: pointer;
+                border: 1px solid #eee;
+            }
+            .feature-card:hover {
+                transform: translateY(-15px) scale(1.02);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            }
+            .feature-card img {
+                height: 150px;
+                width: 100%;
+                object-fit: cover;
+                margin-bottom: 20px;
+                border-radius: 8px;
+                filter: grayscale(20%);
+                transition: filter 0.3s ease;
+            }
+            .feature-card:hover img {
+                filter: grayscale(0%);
+            }
+            .feature-card h3 {
+                color: #007bff;
+                margin-bottom: 12px;
+                font-size: 1.8em;
+                font-weight: 600;
+            }
+            .feature-card p {
+                font-size: 1em;
+                color: #555;
+            }
+
+            /* Why Choose Us Section */
+            .why-choose-us-section {
+                text-align: center;
+                padding: 60px 20px;
+                background-color: #eef7ff;
+                border-radius: 12px;
+                margin-bottom: 50px;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            }
+            .why-choose-us-section h2 {
+                color: #0056b3;
+                font-size: 3em;
+                margin-bottom: 25px;
+                position: relative;
+            }
+            .why-choose-us-section h2::after {
+                content: '';
+                display: block;
+                width: 80px;
+                height: 4px;
+                background-color: #ffc107;
+                margin: 15px auto 0;
+                border-radius: 2px;
+            }
+            .why-choose-us-section p {
+                max-width: 900px;
+                margin: 0 auto 30px auto;
+                font-size: 1.2em;
+                line-height: 1.8;
+                color: #444;
+            }
+            .why-choose-us-section img {
+                max-width: 80%;
+                height: auto;
+                border-radius: 10px;
+                margin-top: 30px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+
+            /* Responsive Adjustments */
+            @media (max-width: 992px) {
+                .hero-section h2 {
+                    font-size: 3em;
+                }
+                .hero-section p {
+                    font-size: 1.1em;
+                }
+                .feature-card {
+                    flex: 1 1 45%;
+                    max-width: 48%;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .hero-section h2 {
+                    font-size: 2.2em;
+                }
+                .hero-section p {
+                    font-size: 1em;
+                }
+                .hero-section {
+                    padding: 80px 15px;
+                    min-height: 350px;
+                }
+                .hero-section .btn-primary {
+                    padding: 12px 25px;
+                    font-size: 1em;
+                }
+                .feature-card {
+                    flex: 1 1 90%;
+                    max-width: 90%;
+                    padding: 25px;
+                }
+                .feature-card img {
+                    height: 120px;
+                }
+                .feature-card h3 {
+                    font-size: 1.6em;
+                }
+                .why-choose-us-section h2 {
+                    font-size: 2.5em;
+                }
+                .why-choose-us-section p {
+                    font-size: 1em;
+                }
+            }
+
+            @media (max-width: 576px) {
+                .hero-section h2 {
+                    font-size: 1.8em;
+                }
+                .hero-section p {
+                    font-size: 0.9em;
+                }
+                .hero-section {
+                    min-height: 300px;
+                }
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="hero-section">
+        <div class="hero-content">
+            <h2>Dịch Vụ Xe Máy Hàng Đầu</h2>
+            <p>Chăm sóc xe của bạn một cách chuyên nghiệp và tin cậy.</p>
+            <a th:href="@{/services/list}" class="btn-primary">Khám phá dịch vụ của chúng tôi</a>
+        </div>
+    </section>
+
+    <section class="features-section container">
+        <div class="feature-card">
+            <img th:src="@{/images/sua-chua-chuyen-sau.jpg}" alt="Sửa chữa chuyên sâu">
+            <h3>Sửa chữa chuyên sâu</h3>
+            <p>Khắc phục mọi sự cố, từ nhỏ đến lớn, với đội ngũ kỹ thuật viên lành nghề.</p>
+        </div>
+        <div class="feature-card">
+            <img th:src="@{/images/bao-duong-dinh-ky.jpg}" alt="Bảo dưỡng định kỳ">
+            <h3>Bảo dưỡng định kỳ</h3>
+            <p>Đảm bảo xe của bạn luôn trong tình trạng tốt nhất với các gói bảo dưỡng toàn diện.</p>
+        </div>
+        <div class="feature-card">
+            <img th:src="@{/images/phu-tung-chinh-hang.jpg}" alt="Phụ tùng chính hãng">
+            <h3>Phụ tùng chính hãng</h3>
+            <p>Cung cấp phụ tùng chất lượng cao, đảm bảo hiệu suất và độ bền cho xe.</p>
+        </div>
+    </section>
+
+    <section class="why-choose-us-section container">
+        <h2>Tại sao chọn chúng tôi?</h2>
+        <p>Với nhiều năm kinh nghiệm, chúng tôi cam kết mang đến dịch vụ tốt nhất cho xe máy của bạn. Sự hài lòng của khách hàng là ưu tiên hàng đầu của chúng tôi.</p>
+        <p>Đội ngũ chuyên gia tận tâm, trang thiết bị hiện đại và quy trình làm việc minh bạch.</p>
+        <img th:src="@{/images/why-choose-us.jpg}" alt="Why Choose Us">
+    </section>
+</div>
+<th:block layout:fragment="js_scripts">
+    <script th:inline="javascript">
+        const heroBackgroundImages = [
+            /*[[@{/images/images (10).jpg}]]*/ '/images/images (10).jpg',
+            /*[[@{/images/images (11).jpg}]]*/ '/images/images (11).jpg',
+            /*[[@{/images/premium_photo-1663090140645-32b7d760853e.jpg}]]*/ '/images/premium_photo-1663090140645-32b7d760853e.jpg'
+        ];
+
+        let currentImageIndex = 0;
+        const heroSection = document.querySelector('.hero-section');
+        let imageElements = [];
+
+        function setupBackgroundImages() {
+            heroBackgroundImages.forEach((src) => {
+                if (src && src.trim() !== '') {
+                    const imgDiv = document.createElement('div');
+                    imgDiv.classList.add('hero-background-image');
+                    imgDiv.style.backgroundImage = `url('${src}')`;
+                    heroSection.prepend(imgDiv);
+                    imageElements.push(imgDiv);
+                } else {
+                    console.warn("Invalid image URL detected:", src);
+                }
+            });
+
+            if (imageElements.length > 0) {
+                imageElements[0].classList.add('active');
+            } else {
+                console.error("No background images were loaded. Please check paths in heroBackgroundImages array.");
+            }
+        }
+
+        function changeBackgroundImage() {
+            if (imageElements.length === 0) return;
+
+            imageElements[currentImageIndex].classList.remove('active');
+            currentImageIndex = (currentImageIndex + 1) % imageElements.length;
+            imageElements[currentImageIndex].classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupBackgroundImages();
+            if (imageElements.length > 1) {
+                setInterval(changeBackgroundImage, 3500);
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>

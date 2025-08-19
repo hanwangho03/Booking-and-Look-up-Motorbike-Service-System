@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lịch sử đặt lịch</title>
+  <!-- Thêm Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+    }
+    /* Style cho preloader nếu có */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease-in-out;
+    }
+    .preloader.hide-preloader {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .bg-cover
+    {
+      margin-bottom: 10px;
+    }
+  </style>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap CSS for modals -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+  <!-- Các file CSS gốc -->
+  <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/all.min.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/animate.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/meanmenu.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/swiper-bundle.min.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/icomon.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/main.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mx-auto px-4 py-8 md:py-12">
+  <!-- GT Breadcrumb Section Start -->
+  <div class="gt-breadcrumb-wrapper bg-cover" style="background-image: url('/assets/img/breadcrumb-bg.jpg');">
+    <div class="gt-right-shape"><img src="/assets/img/breadcrumb-shape.jpg" alt="img"></div>
+    <div class="container">
+      <div class="gt-page-heading">
+        <div class="gt-breadcrumb-sub-title">
+          <h1 class="wow fadeInUp" data-wow-delay=".3s">Lịch sử đặt lịch</h1>
+        </div>
+        <ul class="gt-breadcrumb-items wow fadeInUp" data-wow-delay=".5s">
+          <li><a href="/home">Trang Chủ</a></li>
+          <li><i class="fa-solid fa-chevron-right"></i></li>
+          <li>Lịch sử đặt lịch</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+    <span class="block sm:inline" th:text="${error}"></span>
+  </div>
+  <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+    <span class="block sm:inline" th:text="${success}"></span>
+  </div>
+  <div th:if="${appointmentPage.empty}" class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+    <span class="block sm:inline">Bạn chưa có lịch sử đặt lịch nào.</span>
+  </div>
+
+  <div th:if="${not appointmentPage.empty}" class="bg-white rounded-lg shadow-xl overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-800 text-white">
+        <tr>
+          <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Mã lịch hẹn</th>
+          <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Dịch vụ</th>
+          <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Kỹ thuật viên</th>
+          <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Thời gian bắt đầu</th>
+          <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Thời gian kết thúc</th>
+          <th scope="col" class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider">Trạng thái</th>
+          <th scope="col" class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider">Hành động</th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr th:each="appointment : ${appointmentPage.content}" class="hover:bg-gray-50 transition-colors duration-200">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${appointment.id}"></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${appointment.service.name}"></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${appointment.technician != null ? appointment.technician.name : 'N/A'}"></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${#temporals.format(appointment.startTime, 'dd/MM/yyyy HH:mm')}"></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${#temporals.format(appointment.endTime, 'dd/MM/yyyy HH:mm')}"></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+            <span th:if="${appointment.status.name() == 'cho_xac_nhan'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Chờ xác nhận</span>
+            <span th:if="${appointment.status.name() == 'da_xac_nhan'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Đã xác nhận</span>
+            <span th:if="${appointment.status.name() == 'da_huy'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Đã hủy</span>
+            <span th:if="${appointment.status.name() == 'da_hoan_thanh'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Đã hoàn thành</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+            <div th:if="${appointment.status.name() == 'da_hoan_thanh'}" class="flex justify-center gap-2">
+              <a th:if="${appointment.rating != null}"
+                 th:href="@{/appointment/{id}/rate(id=${appointment.id})}"
+                 class="px-4 py-2 text-xs font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">Xem đánh giá</a>
+              <a th:unless="${appointment.rating != null}"
+                 th:href="@{/appointment/{id}/rate(id=${appointment.id})}"
+                 class="px-4 py-2 text-xs font-semibold text-gray-900 bg-yellow-400 rounded-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors">Đánh giá</a>
+            </div>
+            <div th:unless="${appointment.status.name() == 'da_hoan_thanh' or appointment.status.name() == 'da_huy'}" class="flex justify-center gap-2">
+              <button type="button" class="px-4 py-2 text-xs font-semibold text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors cancel-with-reason-btn"
+                      data-bs-toggle="modal"
+                      data-bs-target="#customerReasonModal"
+                      th:data-appointment-id="${appointment.id}">
+                Hủy
+              </button>
+              <button type="button" class="px-4 py-2 text-xs font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors reschedule-btn"
+                      data-bs-toggle="modal"
+                      data-bs-target="#customerRescheduleModal"
+                      th:data-appointment-id="${appointment.id}"
+                      th:data-current-date="${#temporals.format(appointment.startTime, 'yyyy-MM-dd')}"
+                      th:data-current-time="${#temporals.format(appointment.startTime, 'HH:mm')}">
+                Đổi thời gian
+              </button>
+            </div>
+            <div th:if="${appointment.status.name() == 'da_huy'}">
+              <span class="text-gray-500">-</span>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <nav th:if="${totalPages > 1}" class="mt-8">
+    <ul class="pagination flex justify-center space-x-2">
+      <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+          th:classappend="${i == currentPage} ? 'active' : ''">
+        <a th:href="@{/appointment/history(page=${i},size=10)}"
+           th:classappend="${i == currentPage} ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-200'"
+           class="inline-flex items-center justify-center w-10 h-10 rounded-full font-medium transition-colors border border-gray-300"
+           th:text="${i + 1}"></a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="text-center mt-8">
+    <a th:href="@{/appointment}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+      <i class="fas fa-arrow-left mr-2"></i>Quay lại đặt lịch
+    </a>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="customerReasonModal" tabindex="-1" aria-labelledby="customerReasonModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-xl shadow-2xl">
+      <div class="modal-header bg-red-600 text-white rounded-t-xl">
+        <h5 class="modal-title font-semibold" id="customerReasonModalLabel">Nhập lý do hủy lịch hẹn</h5>
+        <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <form id="submitCustomerCancelForm" th:action="@{/appointment/cancel}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" name="appointmentId" id="customerModalReasonAppointmentId">
+        <div class="modal-body p-6">
+          <p class="text-gray-700 mb-4">Vui lòng nhập lý do bạn muốn hủy lịch hẹn này:</p>
+          <div class="mb-4">
+            <label for="customerCancellationReasonInput" class="form-label font-medium text-gray-700">Lý do hủy (Bắt buộc)</label>
+            <textarea class="form-control mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" id="customerCancellationReasonInput" name="cancellationReason" rows="4" placeholder="Ví dụ: Tôi có việc bận đột xuất, thay đổi kế hoạch..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer p-4 bg-gray-50 rounded-b-xl flex justify-end">
+          <button type="button" class="btn btn-secondary px-6 py-2 rounded-full" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-danger px-6 py-2 rounded-full ml-2">Xác nhận Hủy</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal mới để khách hàng sửa thời gian -->
+<div class="modal fade" id="customerRescheduleModal" tabindex="-1" aria-labelledby="customerRescheduleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-xl shadow-2xl">
+      <div class="modal-header bg-blue-600 text-white rounded-t-xl">
+        <h5 class="modal-title font-semibold" id="customerRescheduleModalLabel">Đổi thời gian lịch hẹn</h5>
+        <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <form id="submitCustomerRescheduleForm" th:action="@{/appointment/reschedule}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" name="appointmentId" id="customerRescheduleAppointmentId">
+        <input type="hidden" name="newStartTime" id="customerNewStartTimeHiddenInput">
+
+        <div class="modal-body p-6">
+          <div class="mb-4">
+            <label for="customerNewDateInput" class="block text-sm font-medium text-gray-700">Ngày mới</label>
+            <input type="date" id="customerNewDateInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+          </div>
+          <div class="mb-4">
+            <label for="customerNewTimeInput" class="block text-sm font-medium text-gray-700">Giờ mới</label>
+            <select id="customerNewTimeInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+              <!-- Các mốc thời gian sẽ được tạo bằng JS -->
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer p-4 bg-gray-50 rounded-b-xl flex justify-end">
+          <button type="button" class="btn btn-secondary px-6 py-2 rounded-full" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary px-6 py-2 rounded-full ml-2">Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="customerMessageModal" tabindex="-1" aria-labelledby="customerMessageModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-xl shadow-2xl">
+      <div class="modal-header bg-indigo-600 text-white rounded-t-xl">
+        <h5 class="modal-title font-semibold" id="customerMessageModalLabel">Thông báo</h5>
+        <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <div class="modal-body p-6">
+        <p id="customerMessageModalBody" class="text-gray-700"></p>
+      </div>
+      <div class="modal-footer p-4 bg-gray-50 rounded-b-xl flex justify-end">
+        <button type="button" class="btn btn-secondary px-6 py-2 rounded-full" data-bs-dismiss="modal">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- JavaScript Files -->
+<!--<< All JS Plugins >>-->
+<script src="/assets/js/jquery-3.7.1.min.js"></script>
+<!--<< Viewport Js >>-->
+<script src="/assets/js/viewport.jquery.js"></script>
+<!--<< Bootstrap Js >>-->
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<!--<< nice-selec Js >>-->
+<script src="/assets/js/jquery.nice-select.min.js"></script>
+<!--<< Waypoints Js >>-->
+<script src="/assets/js/jquery.waypoints.js"></script>
+<!--<< Counterup Js >>-->
+<script src="/assets/js/jquery.counterup.min.js"></script>
+<!--<< Swiper Slider Js >>-->
+<script src="/assets/js/swiper-bundle.min.js"></script>
+<!--<< MeanMenu Js >>-->
+<script src="/assets/js/jquery.meanmenu.min.js"></script>
+<!--<< Magnific Popup Js >>-->
+<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+<!--<< Wow Animation Js >>-->
+<script src="/assets/js/wow.min.js"></script>
+<!--<< Main.js >>-->
+<script src="/assets/js/main.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const customerReasonModal = document.getElementById('customerReasonModal');
+    const customerCancellationReasonTextarea = document.getElementById('customerCancellationReasonInput');
+    const submitCustomerCancelForm = document.getElementById('submitCustomerCancelForm');
+    const customerModalAppointmentId = document.getElementById('customerModalReasonAppointmentId');
+
+    const customerMessageModal = new bootstrap.Modal(document.getElementById('customerMessageModal'));
+    const customerMessageModalBody = document.getElementById('customerMessageModalBody');
+
+    function showMessageAndReload(message, modalToHide) {
+      customerMessageModalBody.textContent = message;
+      customerMessageModal.show();
+      if (modalToHide) {
+        bootstrap.Modal.getInstance(modalToHide).hide();
+      }
+      customerMessageModal._element.addEventListener('hidden.bs.modal', function () {
+        window.location.reload();
+      }, { once: true });
+    }
+
+    const customerRescheduleModal = document.getElementById('customerRescheduleModal');
+    const customerRescheduleAppointmentId = document.getElementById('customerRescheduleAppointmentId');
+    const customerNewDateInput = document.getElementById('customerNewDateInput');
+    const customerNewTimeInput = document.getElementById('customerNewTimeInput');
+    const customerNewStartTimeHiddenInput = document.getElementById('customerNewStartTimeHiddenInput');
+    const submitCustomerRescheduleForm = document.getElementById('submitCustomerRescheduleForm');
+
+    // Hàm tạo các mốc thời gian 20 phút cho dropdown
+    function createTimeOptions() {
+      let select = customerNewTimeInput;
+      if (!select) return;
+      select.innerHTML = '';
+      for (let hour = 8; hour < 20; hour++) {
+        for (let minute = 0; minute < 60; minute += 20) {
+          const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+          const option = document.createElement('option');
+          option.value = timeString;
+          option.textContent = timeString;
+          select.appendChild(option);
+        }
+      }
+    }
+    createTimeOptions();
+
+    if (customerRescheduleModal) {
+      customerRescheduleModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const appointmentId = button.getAttribute('data-appointment-id');
+        const currentDate = button.getAttribute('data-current-date');
+        const currentTime = button.getAttribute('data-current-time');
+
+        if (customerRescheduleAppointmentId) customerRescheduleAppointmentId.value = appointmentId;
+        if (customerNewDateInput) customerNewDateInput.value = currentDate;
+        if (customerNewTimeInput) {
+          customerNewTimeInput.value = currentTime;
+          // Chọn mốc gần nhất nếu thời gian hiện tại không khớp
+          if (customerNewTimeInput.value !== currentTime) {
+            const [currentHour, currentMinute] = currentTime.split(':').map(Number);
+            const closestMinute = Math.round(currentMinute / 20) * 20;
+            const closestTimeString = `${String(currentHour).padStart(2, '0')}:${String(closestMinute).padStart(2, '0')}`;
+            customerNewTimeInput.value = closestTimeString;
+          }
+        }
+      });
+    }
+
+    if (submitCustomerRescheduleForm) {
+      submitCustomerRescheduleForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const newDateValue = customerNewDateInput.value;
+        const newTimeValue = customerNewTimeInput.value;
+        const appointmentId = customerRescheduleAppointmentId.value;
+
+        if (!newDateValue || !newTimeValue) {
+          showMessageAndReload('Vui lòng chọn ngày và giờ mới.');
+          return;
+        }
+
+        if (!appointmentId) {
+          showMessageAndReload('Lỗi: Không tìm thấy ID lịch hẹn. Vui lòng đóng modal và thử lại.');
+          console.error("Lỗi: ID lịch hẹn trong modal sửa thời gian bị rỗng khi submit.");
+          return;
+        }
+
+        const combinedDateTime = `${newDateValue}T${newTimeValue}`;
+        customerNewStartTimeHiddenInput.value = combinedDateTime;
+
+        const formData = new FormData(this);
+
+        fetch(this.action, {
+          method: 'POST',
+          body: formData,
+        })
+                .then(response => response.json())
+                .then(data => {
+                  if (data.status === 'success') {
+                    showMessageAndReload(data.message, customerRescheduleModal);
+                  } else {
+                    showMessageAndReload(data.message, customerRescheduleModal);
+                  }
+                })
+                .catch(error => {
+                  console.error('Lỗi khi đổi thời gian:', error);
+                  showMessageAndReload('Đã xảy ra lỗi kết nối. Vui lòng thử lại.', customerRescheduleModal);
+                });
+      });
+    }
+
+    if (customerReasonModal) {
+      customerReasonModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const appointmentId = button.getAttribute('data-appointment-id');
+        customerModalAppointmentId.value = appointmentId;
+
+        if (customerCancellationReasonTextarea) {
+          customerCancellationReasonTextarea.value = '';
+          customerCancellationReasonTextarea.focus();
+        }
+      });
+    }
+
+    if (submitCustomerCancelForm) {
+      submitCustomerCancelForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const reason = customerCancellationReasonTextarea ? customerCancellationReasonTextarea.value.trim() : '';
+
+        if (reason === '') {
+          showMessageAndReload('Vui lòng nhập lý do hủy lịch hẹn.');
+          if (customerCancellationReasonTextarea) {
+            customerCancellationReasonTextarea.focus();
+          }
+          return;
+        }
+
+        const appointmentIdToCancel = customerModalAppointmentId.value;
+        if (!appointmentIdToCancel) {
+          showMessageAndReload('Lỗi: Không tìm thấy ID lịch hẹn. Vui lòng đóng modal và thử lại.');
+          console.error("Lỗi: ID lịch hẹn trong modal bị rỗng khi submit form hủy (khách hàng).");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('appointmentId', appointmentIdToCancel);
+        formData.append('cancellationReason', reason);
+
+        const csrfInput = document.querySelector('input[name="_csrf"]');
+        if (csrfInput) {
+          formData.append(csrfInput.name, csrfInput.value);
+        }
+
+        fetch(this.action, {
+          method: 'POST',
+          body: formData
+        })
+                .then(response => {
+                  window.location.href = response.url;
+                })
+                .catch(error => {
+                  console.error('Lỗi Fetch API (Customer):', error);
+                  showMessageAndReload('Đã xảy ra lỗi kết nối. Vui lòng thử lại.', customerReasonModal);
+                });
+      });
+    }
+  });
+</script>
+</body>
+</html>

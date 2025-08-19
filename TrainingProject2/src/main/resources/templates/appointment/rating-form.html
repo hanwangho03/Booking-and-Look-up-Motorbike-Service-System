@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đánh giá dịch vụ</title>
+  <!-- Thêm Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+    }
+    .star-rating .fa-star {
+      color: #d1d5db; /* Màu xám nhạt */
+      transition: color 0.2s ease-in-out;
+    }
+    .star-rating .fa-star.checked,
+    .star-rating:not(.readonly) .fa-star:hover,
+    .star-rating:not(.readonly) .fa-star:hover ~ .fa-star.checked {
+      color: #f59e0b; /* Màu vàng */
+    }
+    .star-rating.readonly .fa-star {
+      pointer-events: none;
+    }
+  </style>
+  <!-- Font Awesome cho icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Các file CSS gốc -->
+  <link rel="shortcut icon" th:href="@{/assets/img/favicon.svg}">
+  <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/all.min.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/animate.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/meanmenu.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/swiper-bundle.min.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/icomon.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/main.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mx-auto px-4 py-8 md:py-12">
+  <div class="text-center mb-10">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-800 tracking-tight" th:text="${isRated} ? 'Chi tiết đánh giá' : 'Đánh giá dịch vụ'"></h1>
+    <p class="text-lg text-gray-500 mt-2" th:if="${isRated}">Bạn đã hoàn thành việc đánh giá cho dịch vụ này.</p>
+    <p class="text-lg text-gray-500 mt-2" th:unless="${isRated}">Vui lòng chia sẻ cảm nhận của bạn về trải nghiệm.</p>
+  </div>
+
+  <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+    <span class="block sm:inline" th:text="${error}"></span>
+  </div>
+  <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+    <span class="block sm:inline" th:text="${success}"></span>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
+    <h2 class="text-xl font-semibold text-gray-800 border-b pb-4 mb-4">Thông tin lịch hẹn</h2>
+    <div class="space-y-2 text-gray-600">
+      <p><strong>Mã lịch hẹn:</strong> <span class="font-medium text-gray-900" th:text="${appointment.id}"></span></p>
+      <p><strong>Dịch vụ:</strong> <span class="font-medium text-gray-900" th:text="${appointment.service.name}"></span></p>
+      <p><strong>Kỹ thuật viên:</strong> <span class="font-medium text-gray-900" th:text="${appointment.technician != null ? appointment.technician.name : 'N/A'}"></span></p>
+      <p><strong>Thời gian:</strong> <span class="font-medium text-gray-900" th:text="${#temporals.format(appointment.startTime, 'dd/MM/yyyy HH:mm')}"></span> - <span class="font-medium text-gray-900" th:text="${#temporals.format(appointment.endTime, 'HH:mm')}"></span></p>
+      <p><strong>Trạng thái:</strong>
+        <span th:if="${appointment.status.name() == 'cho_xac_nhan'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Chờ xác nhận</span>
+        <span th:if="${appointment.status.name() == 'da_xac_nhan'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Đã xác nhận</span>
+        <span th:if="${appointment.status.name() == 'da_huy'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Đã hủy</span>
+        <span th:if="${appointment.status.name() == 'da_hoan_thanh'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Đã hoàn thành</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+    <h2 class="text-xl font-semibold text-gray-800 border-b pb-4 mb-4" th:text="${isRated} ? 'Đánh giá của bạn' : 'Gửi đánh giá'"></h2>
+    <div th:if="${isRated}">
+      <div class="space-y-4">
+        <p class="flex items-center space-x-2">
+          <strong class="text-gray-900">Điểm đánh giá:</strong>
+          <span class="star-rating readonly text-2xl">
+                        <i th:each="i : ${#numbers.sequence(1, 5)}"
+                           th:classappend="${i <= existingRating.rating} ? 'fas fa-star checked' : 'far fa-star'"
+                           class="fa-star"></i>
+                    </span>
+          <span class="text-lg font-semibold text-gray-900" th:text="${existingRating.rating} + '/5'"></span>
+        </p>
+        <p>
+          <strong class="text-gray-900">Bình luận:</strong>
+          <span class="text-gray-700" th:text="${existingRating.comment}"></span>
+        </p>
+        <p class="text-sm text-gray-500 mt-2">
+          Được đánh giá vào: <span th:text="${#temporals.format(existingRating.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+        </p>
+      </div>
+    </div>
+    <div th:unless="${isRated}">
+      <form th:action="@{/appointment/{id}/rate(id=${appointment.id})}" method="post">
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Điểm đánh giá (1-5 sao):</label>
+          <div class="star-rating flex items-center space-x-1 text-3xl cursor-pointer" id="starRating">
+            <i class="far fa-star" data-rating="1"></i>
+            <i class="far fa-star" data-rating="2"></i>
+            <i class="far fa-star" data-rating="3"></i>
+            <i class="far fa-star" data-rating="4"></i>
+            <i class="far fa-star" data-rating="5"></i>
+            <input type="hidden" name="ratingScore" id="ratingScore" value="0" required>
+          </div>
+        </div>
+        <div class="mb-6">
+          <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Bình luận:</label>
+          <textarea class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" id="comment" name="comment" rows="5" placeholder="Chia sẻ cảm nhận của bạn về dịch vụ..."></textarea>
+        </div>
+        <button type="submit" class="w-full md:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-full shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+          Gửi đánh giá
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="text-center mt-8">
+    <a th:href="@{/appointment/history}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i>Quay lại lịch sử
+    </a>
+  </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- JavaScript Files -->
+<!--<< All JS Plugins >>-->
+<script src="/assets/js/jquery-3.7.1.min.js"></script>
+<!--<< Viewport Js >>-->
+<script src="/assets/js/viewport.jquery.js"></script>
+<!--<< Bootstrap Js >>-->
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<!--<< nice-selec Js >>-->
+<script src="/assets/js/jquery.nice-select.min.js"></script>
+<!--<< Waypoints Js >>-->
+<script src="/assets/js/jquery.waypoints.js"></script>
+<!--<< Counterup Js >>-->
+<script src="/assets/js/jquery.counterup.min.js"></script>
+<!--<< Swiper Slider Js >>-->
+<script src="/assets/js/swiper-bundle.min.js"></script>
+<!--<< MeanMenu Js >>-->
+<script src="/assets/js/jquery.meanmenu.min.js"></script>
+<!--<< Magnific Popup Js >>-->
+<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+<!--<< Wow Animation Js >>-->
+<script src="/assets/js/wow.min.js"></script>
+<!--<< Main.js >>-->
+<script src="/assets/js/main.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const starRatingContainer = document.getElementById('starRating');
+    if (starRatingContainer) {
+      const stars = starRatingContainer.querySelectorAll('.fa-star');
+      const ratingInput = document.getElementById('ratingScore');
+
+      stars.forEach(star => {
+        star.addEventListener('click', function() {
+          const value = parseInt(this.dataset.rating);
+          ratingInput.value = value;
+          highlightStars(value);
+        });
+
+        star.addEventListener('mouseover', function() {
+          const value = parseInt(this.dataset.rating);
+          highlightStars(value);
+        });
+
+        star.addEventListener('mouseout', function() {
+          const currentValue = parseInt(ratingInput.value);
+          highlightStars(currentValue);
+        });
+      });
+
+      function highlightStars(value) {
+        stars.forEach(star => {
+          const starValue = parseInt(star.dataset.rating);
+          if (starValue <= value) {
+            star.classList.remove('far');
+            star.classList.add('fas', 'checked');
+          } else {
+            star.classList.remove('fas', 'checked');
+            star.classList.add('far');
+          }
+        });
+      }
+
+      // Khởi tạo trạng thái sao khi tải trang
+      highlightStars(parseInt(ratingInput.value));
+    }
+  });
+</script>
+</body>
+</html>

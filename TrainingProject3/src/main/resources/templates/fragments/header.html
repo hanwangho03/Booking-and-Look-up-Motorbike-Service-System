@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="header" class="main-header">
+    <div class="header-container">
+        <div class="logo">
+            <a th:href="@{/}">
+                <img th:src="@{/images/pngtree-new-motorbike-logo-design-vector-png-image_7095431.png}" alt="Logo Dịch vụ xe máy">
+                <span>Dịch vụ xe máy A-Z</span>
+            </a>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a th:href="@{/}">Trang chủ</a></li>
+                <li><a th:href="@{/repair-history}">Tra cứu</a></li>
+                <li><a th:href="@{/services/list}">Dịch vụ</a></li>
+                <li>
+                    <a href="#" id="user-info-btn" class="nav-button">Thông tin</a>
+                </li>
+                <li id="admin-dashboard-link" style="display: none;">
+                    <a th:href="@{/admin/dashboard}" class="nav-button">Admin Dashboard</a>
+                </li>
+                <li id="auth-section">
+                    <span id="user-display-name" style="color: white; margin-right: 10px; font-weight: bold; display: none;"> </span>
+                    <a th:href="@{/api/auth/login}" id="login-link" class="nav-button" style="display: none;">Đăng nhập</a>
+                    <button type="button" id="logout-btn" class="nav-button" style="display: none;">Đăng xuất</button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<link rel="stylesheet" th:href="@{/css/header.css}">
+
+</body>
+</html>

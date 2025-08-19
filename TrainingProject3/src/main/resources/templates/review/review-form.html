@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Đánh giá chất lượng sửa chữa</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; }
+    input[type="number"], textarea { width: 100%; padding: 8px; }
+    button { padding: 10px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+  </style>
+</head>
+<body>
+<h2>Đánh giá chất lượng sửa chữa</h2>
+<form id="reviewForm">
+  <div class="form-group">
+    <label for="rating">Chấm điểm (1 - 5):</label>
+    <input type="number" id="rating" name="rating" min="1" max="5" required>
+  </div>
+  <div class="form-group">
+    <label for="comment">Bình luận:</label>
+    <textarea id="comment" name="comment" rows="4" placeholder="Nhận xét của bạn về dịch vụ..." required></textarea>
+  </div>
+  <button type="submit">Gửi đánh giá</button>
+</form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('reviewForm');
+    const jwtToken = localStorage.getItem('jwtToken');
+    const serviceSessionId = sessionStorage.getItem('reviewSessionId');
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const rating = document.getElementById('rating').value;
+      const comment = document.getElementById('comment').value;
+
+      if (!jwtToken || !serviceSessionId) {
+        alert("Thiếu thông tin phiên sửa chữa hoặc chưa đăng nhập.");
+        return;
+      }
+
+      fetch('http://localhost:7080/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + jwtToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          serviceSessionId: serviceSessionId,
+          rating: parseInt(rating),
+          comment: comment
+        })
+      })
+              .then(res => res.json())
+              .then(data => {
+                if (data.success) {
+                  alert("Cảm ơn bạn đã đánh giá!");
+                  window.location.href = '/'; // hoặc redirect về lịch sử
+                } else {
+                  alert(data.message || "Không thể gửi đánh giá.");
+                }
+              })
+              .catch(err => {
+                console.error("Lỗi gửi đánh giá:", err);
+                alert("Có lỗi xảy ra.");
+              });
+    });
+  });
+</script>
+</body>
+</html>

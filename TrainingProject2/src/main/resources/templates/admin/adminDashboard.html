@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang quản trị</title>
+  <link rel="shortcut icon" th:href="@{/assets/img/favicon.svg}">
+  <!-- Bootstrap min.css -->
+  <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+  <!-- All Min Css -->
+  <link rel="stylesheet" th:href="@{/assets/css/all.min.css}">
+  <!-- Animate.css -->
+  <link rel="stylesheet" th:href="@{/assets/css/animate.css}">
+  <!-- Magnific Popup.css -->
+  <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+  <!-- MeanMenu.css -->
+  <link rel="stylesheet" th:href="@{/assets/css/meanmenu.css}">
+  <!-- Swiper Bundle.css -->
+  <link rel="stylesheet" th:href="@{/assets/css/swiper-bundle.min.css}">
+  <!-- Nice Select.css -->
+  <link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+  <!-- Icomon.css -->
+  <link rel="stylesheet" th:href="@{/assets/css/icomon.css}">
+  <!-- Main.css -->
+  <link rel="stylesheet" th:href="@{/assets/css/main.css}">
+  <!-- Kiểu tùy chỉnh cho lịch hẹn và header -->
+
+  <div th:replace="~{fragments/header :: header}"></div>
+  <!-- Thêm Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+    }
+    .bg-cover{
+      margin-bottom: 20px;
+    }
+  </style>
+  <!-- Font Awesome for icons -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const preloader = document.getElementById('preloader');
+      if (preloader) {
+        preloader.classList.add('hide-preloader');
+        preloader.addEventListener('transitionend', () => {
+          preloader.remove();
+        });
+      }
+    });
+  </script>
+
+  <!-- JavaScript Files -->
+  <!--<< All JS Plugins >>-->
+  <script src="/assets/js/jquery-3.7.1.min.js"></script>
+  <!--<< Viewport Js >>-->
+  <script src="/assets/js/viewport.jquery.js"></script>
+  <!--<< Bootstrap Js >>-->
+  <script src="/assets/js/bootstrap.bundle.min.js"></script>
+  <!--<< nice-selec Js >>-->
+  <script src="/assets/js/jquery.nice-select.min.js"></script>
+  <!--<< Waypoints Js >>-->
+  <script src="/assets/js/jquery.waypoints.js"></script>
+  <!--<< Counterup Js >>-->
+  <script src="/assets/js/jquery.counterup.min.js"></script>
+  <!--<< Swiper Slider Js >>-->
+  <script src="/assets/js/swiper-bundle.min.js"></script>
+  <!--<< MeanMenu Js >>-->
+  <script src="/assets/js/jquery.meanmenu.min.js"></script>
+  <!--<< Magnific Popup Js >>-->
+  <script src="/assets/js/jquery.magnific-popup.min.js"></script>
+  <!--<< Wow Animation Js >>-->
+  <script src="/assets/js/wow.min.js"></script>
+  <!--<< Main.js >>-->
+  <script src="/assets/js/main.js"></script>
+</head>
+<body>
+<div class="container mx-auto px-4 py-12">
+  <!-- GT Breadcrumb Section Start -->
+  <div class="gt-breadcrumb-wrapper bg-cover" style="background-image: url('/assets/img/breadcrumb-bg.jpg');">
+    <div class="gt-right-shape"><img src="/assets/img/breadcrumb-shape.jpg" alt="img"></div>
+    <div class="container">
+      <div class="gt-page-heading">
+        <div class="gt-breadcrumb-sub-title">
+          <h1 class="wow fadeInUp" data-wow-delay=".3s">Trang Quản Trị</h1>
+        </div>
+        <ul class="gt-breadcrumb-items wow fadeInUp" data-wow-delay=".5s">
+          <li><a href="/home">Trang Chủ</a></li>
+          <li><i class="fa-solid fa-chevron-right"></i></li>
+          <li>Trang Quản Trị</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Khối chứa các Card -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Card Quản lý Lịch hẹn -->
+    <div class="relative bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+      <div class="absolute inset-x-0 bottom-0 h-1 bg-indigo-500 rounded-b-2xl"></div>
+      <div class="flex flex-col items-center text-center">
+        <div class="w-16 h-16 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 mb-6 transition-colors duration-300 group-hover:bg-indigo-600 group-hover:text-white">
+          <i class="fas fa-calendar-alt text-3xl"></i>
+        </div>
+        <h4 class="text-2xl font-semibold text-gray-900 mb-2">Quản lý Lịch hẹn</h4>
+        <p class="text-gray-600 mb-6">Xem và điều phối lịch hẹn của khách hàng.</p>
+        <a href="/admin/appointments/schedule" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-8 rounded-full transition-colors duration-300 shadow-md">
+          Đi đến lịch hẹn
+        </a>
+      </div>
+    </div>
+
+    <!-- Card Thống kê -->
+    <div class="relative bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+      <div class="absolute inset-x-0 bottom-0 h-1 bg-emerald-500 rounded-b-2xl"></div>
+      <div class="flex flex-col items-center text-center">
+        <div class="w-16 h-16 flex items-center justify-center rounded-full bg-emerald-100 text-emerald-600 mb-6 transition-colors duration-300 group-hover:bg-emerald-600 group-hover:text-white">
+          <i class="fas fa-chart-bar text-3xl"></i>
+        </div>
+        <h4 class="text-2xl font-semibold text-gray-900 mb-2">Thống kê</h4>
+        <p class="text-gray-600 mb-6">Xem biểu đồ thống kê và khối lượng công việc.</p>
+        <a href="/admin/statistics" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-8 rounded-full transition-colors duration-300 shadow-md">
+          Xem thống kê
+        </a>
+      </div>
+    </div>
+
+    <!-- Card Quản lý Đánh giá -->
+    <div class="relative bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+      <div class="absolute inset-x-0 bottom-0 h-1 bg-sky-500 rounded-b-2xl"></div>
+      <div class="flex flex-col items-center text-center">
+        <div class="w-16 h-16 flex items-center justify-center rounded-full bg-sky-100 text-sky-600 mb-6 transition-colors duration-300 group-hover:bg-sky-600 group-hover:text-white">
+          <i class="fas fa-star text-3xl"></i>
+        </div>
+        <h4 class="text-2xl font-semibold text-gray-900 mb-2">Quản lý Đánh giá</h4>
+        <p class="text-gray-600 mb-6">Xem và quản lý các đánh giá từ khách hàng.</p>
+        <a href="/admin/ratings" class="bg-sky-600 hover:bg-sky-700 text-white font-medium py-3 px-8 rounded-full transition-colors duration-300 shadow-md">
+          Xem đánh giá
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>

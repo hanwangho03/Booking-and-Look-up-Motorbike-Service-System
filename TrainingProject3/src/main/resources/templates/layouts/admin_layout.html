@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title="Admin Dashboard"></title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <th:block layout:fragment="css_additional"></th:block> </head>
+<body>
+<div class="admin-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="/admin/dashboard" class="logo">Admin Panel</a>
+            <button class="toggle-btn" id="sidebarToggle">☰</button>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li th:classappend="${currentUri != null and currentUri.startsWith('/admin/dashboard') ? 'active' : ''}">
+                    <a href="/admin/dashboard">
+                        <i class="icon fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li th:classappend="${currentUri != null and currentUri.startsWith('/admin/vehicles') ? 'active' : ''}">
+                    <a href="/admin/vehicles">
+                        <i class="icon fas fa-car"></i> Quản lý Xe
+                    </a>
+                </li>
+                <li th:classappend="${currentUri != null and currentUri.startsWith('/admin/sessions') ? 'active' : ''}">
+                    <a href="/admin/sessions">
+                        <i class="icon fas fa-tools"></i> Phiên Sửa chữa
+                    </a>
+                </li>
+                <li th:classappend="${currentUri != null and currentUri.startsWith('/admin/products') ? 'active' : ''}">
+                    <a href="/admin/products">
+                        <i class="icon fas fa-box"></i> Sản phẩm/Phụ tùng
+                    </a>
+                </li>
+                <li th:classappend="${currentUri != null and currentUri.startsWith('/admin/services') ? 'active' : ''}">
+                    <a href="/admin/services">
+                        <i class="icon fas fa-wrench"></i> Dịch vụ
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <div class="navbar-left">
+                <button class="toggle-btn" id="navbarToggle">☰</button>
+                <span class="page-title" layout:fragment="page_title">Dashboard</span>
+            </div>
+            <div class="navbar-right">
+                <a href="#" class="nav-item">
+                    <i class="icon fas fa-bell"></i> Thông báo
+                </a>
+                <div class="user-menu">
+                    <img th:src="@{/images/Basic_Ui__28186_29.jpg}" alt="User Avatar" class="user-avatar">
+                    <span class="username">Admin User</span>
+                    <div class="dropdown-content">
+                        <a href="#">Hồ sơ</a>
+                        <a href="#">Cài đặt</a>
+                        <a href="/">Về trang chủ</a>
+                        <a href="#" id="logoutButton">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="page-content">
+            <div class="container-fluid">
+                <th:block layout:fragment="content"></th:block>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; 2023 Tên Công ty của bạn. Đã đăng ký bản quyền.</p>
+            <p>Phiên bản: 1.0.0</p>
+        </footer>
+    </main>
+</div>
+
+<script th:src="@{/js/admin.js}"></script>
+<th:block layout:fragment="js_additional"></th:block>
+</body>
+</html>

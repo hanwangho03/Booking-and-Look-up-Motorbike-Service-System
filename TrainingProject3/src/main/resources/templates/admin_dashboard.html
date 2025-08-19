@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin_layout}">
+<head>
+    <title layout:title="Lịch sử sửa chữa"></title>
+    <th:block layout:fragment="css_additional">
+        <link rel="stylesheet" th:href="@{/css/admin_dashboard.css}">
+    </th:block>
+</head>
+<body>
+<th:block layout:fragment="page_title">Lịch sử sửa chữa</th:block>
+<div layout:fragment="content">
+    <div class="container">
+        <h1>Dashboard quản trị - Lịch sử sửa chữa</h1>
+
+        <div id="message" class="message" style="display: none;"></div>
+
+        <div class="filter-section">
+            <label for="filterDate">Lọc theo ngày:</label>
+            <input type="date" id="filterDate">
+            <button id="applyFilterBtn">Áp dụng bộ lọc</button>
+            <button id="clearFilterBtn">Xóa bộ lọc</button>
+        </div>
+
+        <div class="summary-section">
+            <p>Tổng số lượt sửa chữa: <span id="totalRepairs">0</span></p>
+            <p>Tổng doanh thu: <span id="totalRevenue">0 VND</span></p>
+        </div>
+
+        <table id="repairHistoryTable">
+            <thead>
+            <tr>
+                <th>STT</th>
+                <th>Biển số xe</th>
+                <th>Khách hàng</th>
+                <th>SĐT Khách hàng</th>
+                <th>Ngày sửa</th>
+                <th>Kỹ thuật viên</th>
+                <th>Tổng chi phí</th>
+                <th>Đánh giá</th>
+                <th>Bình luận</th>
+                <th>Chi tiết</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <div id="pagination" class="pagination">
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="js_additional">
+    <script th:src="@{/js/admin_dashboard.js}"></script>
+</th:block>
+</body>
+</html>

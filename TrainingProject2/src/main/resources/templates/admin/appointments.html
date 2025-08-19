@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Pixel-plus">
+    <meta name="description" content="CaroFix - Car Service & Repair HTML Template">
+    <title>Thời khóa biểu lịch hẹn</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/img/favicon.svg}">
+    <!-- Bootstrap min.css -->
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <!-- All Min Css -->
+    <link rel="stylesheet" th:href="@{/assets/css/all.min.css}">
+    <!-- Animate.css -->
+    <link rel="stylesheet" th:href="@{/assets/css/animate.css}">
+    <!-- Magnific Popup.css -->
+    <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+    <!-- MeanMenu.css -->
+    <link rel="stylesheet" th:href="@{/assets/css/meanmenu.css}">
+    <!-- Swiper Bundle.css -->
+    <link rel="stylesheet" th:href="@{/assets/css/swiper-bundle.min.css}">
+    <!-- Nice Select.css -->
+    <link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+    <!-- Icomon.css -->
+    <link rel="stylesheet" th:href="@{/assets/css/icomon.css}">
+    <!-- Main.css -->
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}">
+    <!-- Kiểu tùy chỉnh cho lịch hẹn và header -->
+    <style>
+        .table {
+            max-width: 100%;
+            margin: auto;
+        }
+        .time-cell {
+            min-height: 120px;
+        }
+        .appointment-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #0d6efd;
+            padding: 5px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .appointment-box small {
+            display: block;
+            font-size: 0.8em;
+            color: #555;
+        }
+        /* Header cố định */
+        #header-sticky.sticky {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        /* Nút quay về đầu trang */
+        .gt-back-to-top {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: #0d6efd; /* Màu chính của Bootstrap */
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .gt-back-to-top.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .gt-back-to-top img {
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        body {
+            padding-top: 30px;
+        }
+        .main-content {
+            margin-bottom: 50px;
+        }
+        .bg-cover{
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div>
+
+</div>
+<div class="container mt-4 main-content">
+    <div class="gt-breadcrumb-wrapper bg-cover" style="background-image: url('/assets/img/breadcrumb-bg.jpg');">
+        <div class="gt-right-shape"><img src="/assets/img/breadcrumb-shape.jpg" alt="img"></div>
+        <div class="container">
+            <div class="gt-page-heading">
+                <div class="gt-breadcrumb-sub-title">
+                    <h1 class="wow fadeInUp" data-wow-delay=".3s">Quản lý lịch hẹn</h1>
+                </div>
+                <ul class="gt-breadcrumb-items wow fadeInUp" data-wow-delay=".5s">
+                    <li><a href="/home">Trang Chủ</a></li>
+                    <li><i class="fa-solid fa-chevron-right"></i></li>
+                    <li>Quản lý lịch hẹn</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            Tìm kiếm & Lọc Lịch hẹn
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/appointments/schedule}" method="get" class="row g-3 align-items-end">
+                <input type="hidden" name="weekOffset" th:value="${weekOffset}" />
+
+                <div class="col-md-4">
+                    <label for="serviceSelect" class="form-label">Dịch vụ:</label>
+                    <select id="serviceSelect" name="serviceName" class="form-select">
+                        <option value="">-- Tất cả dịch vụ --</option>
+                        <option th:each="service : ${services}"
+                                th:value="${service.name}"
+                                th:text="${service.name}"
+                                th:selected="${service.name == selectedServiceName}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="statusSelect" class="form-label">Trạng thái:</label>
+                    <select id="statusSelect" name="status" class="form-select">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option th:each="statusOption : ${statuses}"
+                                th:value="${statusOption.name()}"
+                                th:text="${statusOption.name() == 'cho_xac_nhan' ? 'Chờ xác nhận' :
+                                          (statusOption.name() == 'da_xac_nhan' ? 'Đã xác nhận' :
+                                          (statusOption.name() == 'da_huy' ? 'Đã hủy' : 'Đã hoàn thành'))}"
+                                th:selected="${selectedStatus != null and statusOption.name() == selectedStatus.name()}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="technicianSelect" class="form-label">Kỹ thuật viên:</label>
+                    <select id="technicianSelect" name="technicianId" class="form-select">
+                        <option value="">-- Tất cả KTV --</option>
+                        <option th:each="tech : ${technicians}"
+                                th:value="${tech.id}"
+                                th:text="${tech.name}"
+                                th:selected="${tech.id == selectedTechnicianId}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-filter me-1"></i>Lọc
+                    </button>
+                    <a th:href="@{/admin/appointments/schedule(weekOffset=${weekOffset})}" class="btn btn-secondary">
+                        <i class="fas fa-sync-alt me-1"></i>Đặt lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <table class="table table-bordered text-center align-middle">
+        <thead class="table-dark">
+        <tr>
+            <th>Khung giờ</th>
+            <th>Thứ 2</th>
+            <th>Thứ 3</th>
+            <th>Thứ 4</th>
+            <th>Thứ 5</th>
+            <th>Thứ 6</th>
+            <th>Thứ 7</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="slot : ${timeSlots}">
+            <th th:text="${slot.label}"></th>
+            <td th:each="day : ${#numbers.sequence(1,6)}" class="time-cell">
+                <div th:each="appointment : ${appointments}"
+                     th:if="${#temporals.dayOfWeek(appointment.startTime) == day
+                            and #temporals.format(appointment.startTime, 'HH:mm') >= slot.startTime
+                            and #temporals.format(appointment.startTime, 'HH:mm') < slot.endTime}">
+                    <div class="appointment-box d-flex flex-column gap-2 align-items-start">
+                        <strong th:text="${appointment.customer.name}">Khách</strong>
+                        <small th:text="${appointment.customer.phoneNumber}">Số điện thoại</small>
+                        <small th:text="${appointment.service.name}">Dịch vụ</small>
+                        <small th:text="${appointment.technician.name}">KTV</small>
+
+                        <div th:if="${appointment.status.name() != 'da_huy' and appointment.status.name() != 'da_hoan_thanh'}" class="w-100">
+                            <form th:action="@{/admin/appointments/change-technician}" method="post" class="d-flex flex-column gap-2">
+                                <input type="hidden" name="appointmentId" th:value="${appointment.id}" />
+                                <input type="hidden" name="weekOffset" th:value="${weekOffset}" />
+                                <input type="hidden" name="serviceName" th:value="${selectedServiceName}" />
+                                <input type="hidden" name="status" th:value="${selectedStatus}" />
+                                <input type="hidden" name="technicianIdFilter" th:value="${selectedTechnicianId}" />
+
+                                <select name="technicianId" class="form-select form-select-sm">
+                                    <option th:each="tech : ${technicians}"
+                                            th:value="${tech.id}"
+                                            th:text="${tech.name}"
+                                            th:selected="${tech.id == appointment.technician.id}">
+                                    </option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-warning w-100">Đổi KTV</button>
+                            </form>
+                            <div class="d-flex mt-2 justify-content-between">
+                                <button type="button" class="btn btn-sm btn-info w-100 edit-time-btn me-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editTimeModal"
+                                        th:data-appointment-id="${appointment.id}"
+                                        th:data-current-date="${#temporals.format(appointment.startTime, 'yyyy-MM-dd')}"
+                                        th:data-current-time="${#temporals.format(appointment.startTime, 'HH:mm')}"
+                                        th:data-week-offset="${weekOffset}"
+                                        th:data-service-name="${selectedServiceName}"
+                                        th:data-status="${selectedStatus}"
+                                        th:data-technician-id-filter="${selectedTechnicianId}">
+                                    Sửa thời gian
+                                </button>
+                            </div>
+                        </div>
+
+                        <small th:text="${#temporals.format(appointment.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(appointment.endTime, 'HH:mm')}">Giờ</small>
+
+                        <span th:if="${appointment.status.name() == 'cho_xac_nhan'}" class="badge bg-warning text-dark">Chờ xác nhận</span>
+                        <span th:if="${appointment.status.name() == 'da_xac_nhan'}" class="badge bg-primary">Đã xác nhận</span>
+                        <span th:if="${appointment.status.name() == 'da_huy'}" class="badge bg-danger">Đã hủy</span>
+                        <span th:if="${appointment.status.name() == 'da_hoan_thanh'}" class="badge bg-success">Đã hoàn thành</span>
+
+                        <div th:if="${appointment.status.name() == 'cho_xac_nhan'}" class="d-flex gap-2 w-100 justify-content-between">
+                            <form th:action="@{/admin/appointments/approve}" method="post" class="flex-fill">
+                                <input type="hidden" name="appointmentId" th:value="${appointment.id}" />
+                                <input type="hidden" name="weekOffset" th:value="${weekOffset}" />
+                                <input type="hidden" name="serviceName" th:value="${selectedServiceName}" />
+                                <input type="hidden" name="status" th:value="${selectedStatus}" />
+                                <input type="hidden" name="technicianIdFilter" th:value="${selectedTechnicianId}" />
+                                <button type="submit" class="btn btn-sm btn-success w-100">Phê duyệt</button>
+                            </form>
+                            <div class="flex-fill">
+                                <button type="button" class="btn btn-sm btn-danger w-100 cancel-with-reason-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#reasonModal"
+                                        th:data-appointment-id="${appointment.id}"
+                                        th:data-week-offset="${weekOffset}"
+                                        th:data-service-name="${selectedServiceName}"
+                                        th:data-status="${selectedStatus}"
+                                        th:data-technician-id-filter="${selectedTechnicianId}">
+                                    Hủy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div th:if="${appointment.status.name() == 'da_xac_nhan'}" class="d-flex gap-2 w-100 justify-content-between">
+                            <div class="flex-fill">
+                                <button type="button" class="btn btn-sm btn-danger w-100 cancel-with-reason-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#reasonModal"
+                                        th:data-appointment-id="${appointment.id}"
+                                        th:data-week-offset="${weekOffset}"
+                                        th:data-service-name="${selectedServiceName}"
+                                        th:data-status="${selectedStatus}"
+                                        th:data-technician-id-filter="${selectedTechnicianId}">
+                                    Hủy
+                                </button>
+                            </div>
+
+                            <form th:action="@{/admin/appointments/complete}" method="post"
+                                  onsubmit="return confirm('Xác nhận đã hoàn thành lịch hẹn này?');" class="flex-fill">
+                                <input type="hidden" name="appointmentId" th:value="${appointment.id}" />
+                                <input type="hidden" name="weekOffset" th:value="${weekOffset}" />
+                                <input type="hidden" name="serviceName" th:value="${selectedServiceName}" />
+                                <input type="hidden" name="status" th:value="${selectedStatus}" />
+                                <input type="hidden" name="technicianIdFilter" th:value="${selectedTechnicianId}" />
+                                <button type="submit" class="btn btn-sm btn-primary w-100">Hoàn thành</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-center mt-4">
+        <a th:href="@{/admin/appointments/schedule(weekOffset=${weekOffset - 1}, serviceName=${selectedServiceName}, status=${selectedStatus}, technicianId=${selectedTechnicianId})}" class="btn btn-outline-primary me-2">
+            &laquo; Tuần trước
+        </a>
+        <span class="align-self-center fw-bold">
+            <span th:text="${#temporals.format(startOfWeek, 'dd/MM/yyyy')}"></span>
+            &nbsp;-&nbsp;
+            <span th:text="${#temporals.format(startOfWeek.plusDays(5), 'dd/MM/yyyy')}"></span>
+        </span>
+        <a th:href="@{/admin/appointments/schedule(weekOffset=${weekOffset + 1}, serviceName=${selectedServiceName}, status=${selectedStatus}, technicianId=${selectedTechnicianId})}" class="btn btn-outline-primary ms-2">
+            Tuần sau &raquo;
+        </a>
+    </div>
+
+    <div class="modal fade" id="adminModal" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adminModalLabel">Thông báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body" id="adminModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="reasonModal" tabindex="-1" aria-labelledby="reasonModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reasonModalLabel">Nhập lý do hủy lịch hẹn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <form id="submitAdminCancelForm" th:action="@{/admin/appointments/cancel}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="hidden" name="appointmentId" id="modalReasonAppointmentId">
+                    <input type="hidden" name="weekOffset" id="modalReasonWeekOffset">
+                    <input type="hidden" name="serviceName" id="modalReasonServiceName">
+                    <input type="hidden" name="status" id="modalReasonStatus">
+                    <input type="hidden" name="technicianIdFilter" id="modalReasonTechnicianIdFilter">
+                    <div class="modal-body">
+                        <p>Vui lòng nhập lý do bạn muốn hủy lịch hẹn này:</p>
+                        <div class="mb-3">
+                            <label for="cancellationReasonInput" class="form-label">Lý do hủy (Bắt buộc)</label>
+                            <textarea class="form-control" id="cancellationReasonInput" name="cancellationReason" rows="4" placeholder="Ví dụ: Khách hàng yêu cầu, kỹ thuật viên bận đột xuất..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-danger">Xác nhận Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal mới để sửa thời gian lịch hẹn -->
+    <div class="modal fade" id="editTimeModal" tabindex="-1" aria-labelledby="editTimeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editTimeModalLabel">Sửa thời gian lịch hẹn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <form id="submitEditTimeForm" th:action="@{/admin/appointments/reschedule}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="hidden" name="appointmentId" id="modalEditAppointmentId">
+                    <input type="hidden" name="weekOffset" id="modalEditWeekOffset">
+                    <input type="hidden" name="serviceName" id="modalEditServiceName">
+                    <input type="hidden" name="status" id="modalEditStatus">
+                    <input type="hidden" name="technicianIdFilter" id="modalEditTechnicianIdFilter">
+
+                    <input type="hidden" name="newStartTime" id="newStartTimeHiddenInput">
+
+                    <div class="modal-body">
+                        <!-- Trường chọn Ngày -->
+                        <div class="mb-3">
+                            <label for="newDateInput" class="form-label">Ngày mới</label>
+                            <input type="date" class="form-control" id="newDateInput" required>
+                        </div>
+                        <!-- Trường chọn Giờ với dropdown các mốc 20 phút -->
+                        <div class="mb-3">
+                            <label for="newTimeInput" class="form-label">Giờ mới</label>
+                            <select class="form-select" id="newTimeInput" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div>
+
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- JavaScript Files -->
+<!--<< All JS Plugins >>-->
+<script src="/assets/js/jquery-3.7.1.min.js"></script>
+<!--<< Viewport Js >>-->
+<script src="/assets/js/viewport.jquery.js"></script>
+<!--<< Bootstrap Js >>-->
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<!--<< nice-selec Js >>-->
+<script src="/assets/js/jquery.nice-select.min.js"></script>
+<!--<< Waypoints Js >>-->
+<script src="/assets/js/jquery.waypoints.js"></script>
+<!--<< Counterup Js >>-->
+<script src="/assets/js/jquery.counterup.min.js"></script>
+<!--<< Swiper Slider Js >>-->
+<script src="/assets/js/swiper-bundle.min.js"></script>
+<!--<< MeanMenu Js >>-->
+<script src="/assets/js/jquery.meanmenu.min.js"></script>
+<!--<< Magnific Popup Js >>-->
+<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+<!--<< Wow Animation Js >>-->
+<script src="/assets/js/wow.min.js"></script>
+<!--<< Main.js >>-->
+<script src="/assets/js/main.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Xử lý header cố định
+        const header = document.getElementById('header-sticky');
+        const stickyOffset = header.offsetTop;
+
+        window.addEventListener('scroll', function () {
+            if (window.pageYOffset > stickyOffset) {
+                header.classList.add('sticky');
+            } else {
+                header.classList.remove('sticky');
+            }
+        });
+
+        // Xử lý nút quay về đầu trang
+        const backToTopButton = document.getElementById('gt-back-top');
+
+        window.addEventListener('scroll', function () {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+
+        backToTopButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Xử lý modal hủy lịch hẹn
+        const reasonModal = document.getElementById('reasonModal');
+        const modalReasonAppointmentIdInput = document.getElementById('modalReasonAppointmentId');
+        const modalReasonWeekOffsetInput = document.getElementById('modalReasonWeekOffset');
+        const modalReasonServiceNameInput = document.getElementById('modalReasonServiceName');
+        const modalReasonStatusInput = document.getElementById('modalReasonStatus');
+        const modalReasonTechnicianIdFilterInput = document.getElementById('modalReasonTechnicianIdFilter');
+        const cancellationReasonTextarea = document.getElementById('cancellationReasonInput');
+        const submitAdminCancelForm = document.getElementById('submitAdminCancelForm');
+
+        if (reasonModal) {
+            reasonModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const appointmentId = button.getAttribute('data-appointment-id');
+                const weekOffset = button.getAttribute('data-week-offset');
+                const serviceName = button.getAttribute('data-service-name');
+                const status = button.getAttribute('data-status');
+                const technicianIdFilter = button.getAttribute('data-technician-id-filter');
+
+                if (modalReasonAppointmentIdInput) modalReasonAppointmentIdInput.value = appointmentId || '';
+                if (modalReasonWeekOffsetInput) modalReasonWeekOffsetInput.value = weekOffset || '0';
+                if (modalReasonServiceNameInput) modalReasonServiceNameInput.value = serviceName || '';
+                if (modalReasonStatusInput) modalReasonStatusInput.value = status || '';
+                if (modalReasonTechnicianIdFilterInput) modalReasonTechnicianIdFilterInput.value = technicianIdFilter || '';
+                if (cancellationReasonTextarea) {
+                    cancellationReasonTextarea.value = '';
+                    cancellationReasonTextarea.focus();
+                }
+            });
+        }
+
+        if (submitAdminCancelForm) {
+            submitAdminCancelForm.addEventListener('submit', function(event) {
+                if (!cancellationReasonTextarea || cancellationReasonTextarea.value.trim() === '') {
+                    event.preventDefault();
+                    alert('Vui lòng nhập lý do hủy lịch hẹn.');
+                    if (cancellationReasonTextarea) cancellationReasonTextarea.focus();
+                }
+                if (!modalReasonAppointmentIdInput || modalReasonAppointmentIdInput.value.trim() === '') {
+                    event.preventDefault();
+                    alert('Lỗi: Không tìm thấy ID lịch hẹn. Vui lòng đóng modal và thử lại.');
+                    console.error("Lỗi: ID lịch hẹn trong modal bị rỗng khi submit form hủy.");
+                }
+            });
+        }
+
+        // Bắt đầu phần code mới để xử lý modal sửa thời gian
+        const editTimeModal = document.getElementById('editTimeModal');
+        const modalEditAppointmentId = document.getElementById('modalEditAppointmentId');
+        const newDateInput = document.getElementById('newDateInput');
+        const newTimeInput = document.getElementById('newTimeInput');
+        const newStartTimeHiddenInput = document.getElementById('newStartTimeHiddenInput'); // Trường ẩn mới
+
+        const modalEditWeekOffset = document.getElementById('modalEditWeekOffset');
+        const modalEditServiceName = document.getElementById('modalEditServiceName');
+        const modalEditStatus = document.getElementById('modalEditStatus');
+        const modalEditTechnicianIdFilter = document.getElementById('modalEditTechnicianIdFilter');
+        const submitEditTimeForm = document.getElementById('submitEditTimeForm');
+
+        // Tạo các mốc thời gian 20 phút và thêm vào dropdown
+        function createTimeOptions() {
+            let select = newTimeInput;
+            select.innerHTML = '';
+            for (let hour = 8; hour < 20; hour++) { // Từ 8h sáng đến 20h tối
+                for (let minute = 0; minute < 60; minute += 20) {
+                    const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                    const option = document.createElement('option');
+                    option.value = timeString;
+                    option.textContent = timeString;
+                    select.appendChild(option);
+                }
+            }
+        }
+        createTimeOptions();
+
+        if (editTimeModal) {
+            editTimeModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const appointmentId = button.getAttribute('data-appointment-id');
+                const currentDate = button.getAttribute('data-current-date');
+                const currentTime = button.getAttribute('data-current-time');
+                const weekOffset = button.getAttribute('data-week-offset');
+                const serviceName = button.getAttribute('data-service-name');
+                const status = button.getAttribute('data-status');
+                const technicianIdFilter = button.getAttribute('data-technician-id-filter');
+
+                if (modalEditAppointmentId) modalEditAppointmentId.value = appointmentId;
+                if (newDateInput) newDateInput.value = currentDate;
+                if (newTimeInput) {
+                    newTimeInput.value = currentTime;
+                    // Nếu thời gian hiện tại không phải là mốc 20p, chọn giá trị gần nhất
+                    if (newTimeInput.value !== currentTime) {
+                        const [currentHour, currentMinute] = currentTime.split(':').map(Number);
+                        const closestMinute = Math.round(currentMinute / 20) * 20;
+                        const closestTimeString = `${String(currentHour).padStart(2, '0')}:${String(closestMinute).padStart(2, '0')}`;
+                        newTimeInput.value = closestTimeString;
+                    }
+                }
+
+                if (modalEditWeekOffset) modalEditWeekOffset.value = weekOffset;
+                if (modalEditServiceName) modalEditServiceName.value = serviceName;
+                if (modalEditStatus) modalEditStatus.value = status;
+                if (modalEditTechnicianIdFilter) modalEditTechnicianIdFilter.value = technicianIdFilter;
+            });
+        }
+
+        // Thêm một listener để đảm bảo dữ liệu không bị trống và kết hợp chuỗi
+        if (submitEditTimeForm) {
+            submitEditTimeForm.addEventListener('submit', function(event) {
+                const newDateValue = newDateInput.value;
+                const newTimeValue = newTimeInput.value;
+
+                if (!newDateValue || !newTimeValue) {
+                    event.preventDefault();
+                    alert('Vui lòng chọn ngày và giờ mới.');
+                } else if (!modalEditAppointmentId.value) {
+                    event.preventDefault();
+                    alert('Lỗi: Không tìm thấy ID lịch hẹn. Vui lòng đóng modal và thử lại.');
+                    console.error("Lỗi: ID lịch hẹn trong modal sửa thời gian bị rỗng khi submit.");
+                } else {
+                    // Nối ngày và giờ lại với nhau theo định dạng yyyy-MM-dd'T'HH:mm
+                    const combinedDateTime = `${newDateValue}T${newTimeValue}`;
+                    newStartTimeHiddenInput.value = combinedDateTime;
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

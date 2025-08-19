@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách xe</title>
+    <link rel="icon" type="image/x-icon" href="https://example.com/favicon.ico">
+    <style>
+        /* CSS cơ bản để bảng trông gọn gàng hơn */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #e9e9e9;
+        }
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #555;
+        }
+        .error-message {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Danh sách xe</h1>
+    <div id="loading" class="loading">Đang tải dữ liệu...</div>
+    <div id="message" class="message"></div>
+    <table id="vehicleTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>ID Khách hàng</th>
+            <th>Biển số</th>
+            <th>Hãng</th>
+            <th>Model</th>
+            <th>Năm sản xuất</th>
+            <th>Số VIN</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:7080/api/vehicles'; // Điều chỉnh cổng nếu khác
+    const vehicleTableBody = document.querySelector('#vehicleTable tbody');
+    const messageDiv = document.getElementById('message');
+    const loadingDiv = document.getElementById('loading');
+
+    async function fetchVehicles() {
+        loadingDiv.style.display = 'block'; // Hiển thị thông báo tải
+        messageDiv.textContent = ''; // Xóa tin nhắn cũ
+
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                // Nếu phản hồi HTTP không phải 2xx (ví dụ: 404, 500)
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const apiResponse = await response.json(); // Phân tích JSON
+
+            loadingDiv.style.display = 'none'; // Ẩn thông báo tải
+
+            if (apiResponse.success) {
+                // Nếu API trả về success: true
+                const vehicles = apiResponse.data;
+                if (vehicles && vehicles.length > 0) {
+                    displayVehicles(vehicles);
+                    messageDiv.textContent = apiResponse.message || "Tải dữ liệu thành công.";
+                } else {
+                    messageDiv.textContent = apiResponse.message || "Không tìm thấy xe nào.";
+                }
+            } else {
+                // Nếu API trả về success: false
+                let errorMessage = apiResponse.message || "Có lỗi xảy ra.";
+                if (apiResponse.error && apiResponse.error.message) {
+                    errorMessage += ` Chi tiết: ${apiResponse.error.message}`;
+                }
+                messageDiv.textContent = `Lỗi: ${errorMessage}`;
+                messageDiv.classList.add('error-message');
+            }
+
+        } catch (error) {
+            loadingDiv.style.display = 'none'; // Ẩn thông báo tải
+            console.error('Lỗi khi fetch dữ liệu:', error);
+            messageDiv.textContent = `Lỗi kết nối hoặc xử lý dữ liệu: ${error.message}. Vui lòng kiểm tra console.`;
+            messageDiv.classList.add('error-message');
+        }
+    }
+
+    function displayVehicles(vehicles) {
+        vehicleTableBody.innerHTML = ''; // Xóa các hàng cũ
+        vehicles.forEach(vehicle => {
+            const row = vehicleTableBody.insertRow();
+            row.insertCell().textContent = vehicle.id;
+            row.insertCell().textContent = vehicle.customerId || 'N/A'; // Hiển thị N/A nếu null
+            row.insertCell().textContent = vehicle.licensePlate;
+            row.insertCell().textContent = vehicle.brand;
+            row.insertCell().textContent = vehicle.model;
+            row.insertCell().textContent = vehicle.year || 'N/A';
+            row.insertCell().textContent = vehicle.vinNumber || 'N/A';
+        });
+    }
+
+    // Gọi hàm khi trang web tải xong
+    document.addEventListener('DOMContentLoaded', fetchVehicles);
+</script>
+</body>
+</html>

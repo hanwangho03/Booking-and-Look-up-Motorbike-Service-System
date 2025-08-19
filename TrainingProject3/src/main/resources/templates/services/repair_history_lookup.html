@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title layout:title="Tra cứu Lịch sử Sửa chữa"></title>
+  <th:block layout:fragment="css_styles">
+    <link rel="stylesheet" th:href="@{/css/repair_history.css}">
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container">
+    <h1>Tra cứu thông tin xe & bảo trì</h1>
+    <div id="message" class="message" style="display: none;"></div>
+
+    <form id="lookupForm">
+      <div class="form-group">
+        <label for="query">Nhập Số điện thoại hoặc Biển số xe:</label>
+        <input type="text" id="query" name="query" placeholder="Ví dụ: 0987654321 hoặc 30A-12345" required>
+      </div>
+      <button type="submit">Tra cứu</button>
+    </form>
+
+    <div id="resultsContainer" class="results-container" style="display: none;">
+      <button id="exportPdfButton" class="btn btn-primary export-pdf-button" style="display: none;">
+        Xuất Lịch Sử Sửa Chữa ra PDF
+      </button>
+      <div id="dynamicResultsContent">
+      </div>
+    </div>
+  </div>
+</div>
+
+<th:block layout:fragment="js_scripts">
+  <script th:src="@{/js/repair_history.js}"></script>
+</th:block>
+</body>
+</html>

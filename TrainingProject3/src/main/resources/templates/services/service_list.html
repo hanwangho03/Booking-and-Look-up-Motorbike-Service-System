@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title layout:title="Dịch vụ của chúng tôi"></title>
+  <th:block layout:fragment="css_styles">
+    <style>
+      .service-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 30px;
+      }
+      .service-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        overflow: hidden;
+        text-align: center;
+        padding-bottom: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      }
+      .service-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 15px;
+      }
+      .service-card h3 {
+        color: #007bff;
+        margin-bottom: 10px;
+        padding: 0 15px;
+      }
+      .service-card p {
+        padding: 0 15px;
+        color: #666;
+      }
+      .service-card .btn {
+        display: inline-block;
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+      }
+      .service-card .btn:hover {
+        background-color: #218838;
+      }
+    </style>
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <h1>Các Dịch Vụ Chúng Tôi Cung Cấp</h1>
+
+  <div class="service-grid">
+    <div class="service-card">
+      <img th:src="@{/images/z3832287577531_6418fcc87dfd0ffca03c153890e2fa14.jpg}" alt="Sửa chữa tổng quát">
+      <h3>Sửa chữa Tổng quát</h3>
+      <p>Khắc phục các sự cố thường gặp, kiểm tra hệ thống điện, động cơ, phanh.</p>
+      <a href="#" class="btn">Tìm hiểu thêm</a>
+    </div>
+    <div class="service-card">
+      <img th:src="@{/images/R.jpg}" alt="Thay dầu">
+      <h3>Thay dầu & Lọc</h3>
+      <p>Sử dụng dầu nhớt chất lượng cao và thay lọc định kỳ để bảo vệ động cơ.</p>
+      <a href="#" class="btn">Tìm hiểu thêm</a>
+    </div>
+    <div class="service-card">
+      <img th:src="@{/images/cach-thay-lop-du-phong-xe-o-to.jpg}" alt="Kiểm tra lốp">
+      <h3>Kiểm tra & Thay lốp</h3>
+      <p>Đảm bảo lốp xe của bạn luôn an toàn với dịch vụ kiểm tra áp suất, vá hoặc thay lốp mới.</p>
+      <a href="#" class="btn">Tìm hiểu thêm</a>
+    </div>
+    <div class="service-card">
+      <img th:src="@{/images/cham-soc-xe-hoi-khac-rua-xe-nhu-the-nao.jpg}" alt="Rửa xe">
+      <h3>Rửa xe & Chăm sóc</h3>
+      <p>Làm sạch xe từ trong ra ngoài, đánh bóng và bảo vệ lớp sơn xe của bạn.</p>
+      <a href="#" class="btn">Tìm hiểu thêm</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

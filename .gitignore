@@ -1,0 +1,49 @@
+# Cấu hình IDE (bỏ qua các tệp cài đặt của các IDE phổ biến)
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# Thư mục xây dựng
+# Đối với Maven
+/target/
+# Đối với Gradle
+/build/
+.gradle/
+!gradle-wrapper.jar
+
+# Tệp nhật ký (logs)
+*.log
+logs/
+nohup.out
+
+# Tệp cấu hình nhạy cảm (secrets, passwords)
+src/main/resources/application.properties
+src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties
+.env
+.env.local
+
+# Các tệp đã được đóng gói (JAR, WAR)
+*.jar
+*.war
+/out/
+/classes/
+
+# Các tệp hình ảnh (theo yêu cầu của bạn)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.bmp
+*.ico
+*.webp
+
+# Các tệp hệ thống
+.DS_Store
+Thumbs.db
